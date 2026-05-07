@@ -28,11 +28,8 @@ export default function ComparePage() {
 
   useEffect(() => {
     if (activeIds.length < 2) {
-      setResult([]);
       return;
     }
-
-    setError("");
     void fetch(`/api/compare?ids=${activeIds.join(",")}`)
       .then(async (res) => {
         const data = await res.json();

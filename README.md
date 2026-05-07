@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# College Bhandaar
 
-## Getting Started
+Production-grade MVP for a **college discovery + decision platform** built with:
+- **Frontend:** Next.js (React + TypeScript) + Tailwind CSS
+- **Backend:** Next.js REST APIs
+- **Database:** PostgreSQL + Prisma ORM
 
-First, run the development server:
+## Features Implemented (4)
+1. **College Listing + Search**
+   - College cards with name, location, fees, rating, placement%
+   - Search by college name
+   - Filters: location, max fees, course
+   - Pagination
 
+2. **College Detail Page**
+   - Overview with fees, courses offered, basic info
+   - Sections: courses, reviews
+
+3. **Compare Colleges (High Priority)**
+   - Select 2–3 colleges
+   - Comparison table with fees, placement %, rating, location
+
+4. **Simple Predictor Tool**
+   - Input: exam + rank
+   - Output: matching colleges based on rule-based cutoff logic
+
+## Project Structure
+- `src/app/colleges` → listing + detail UI routes
+- `src/app/compare` → compare UI route
+- `src/app/predictor` → predictor UI route
+- `src/app/api/*` → REST API routes
+- `prisma/schema.prisma` → database models
+- `prisma/seed.ts` → seed dataset
+
+## REST APIs
+- `GET /api/colleges` 
+  - Query params: `search`, `location`, `maxFees`, `course`, `page`, `limit`
+- `GET /api/colleges/options`
+- `GET /api/colleges/:id`
+- `GET /api/compare?ids=id1,id2[,id3]`
+- `POST /api/predictor` with `{ "exam": "JEE", "rank": 5000 }`
+
+## Local Setup
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Copy env file:
+   ```bash
+   cp .env.example .env
+   ```
+3. Ensure `DATABASE_URL` points to a running PostgreSQL instance.
+4. Push schema + generate client + seed:
+   ```bash
+   npm run db:push
+   npm run db:seed
+   ```
+5. Start dev server:
+   ```bash
+   npm run dev
+   ```
+
+## Validation
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run lint
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deployment
+### Frontend + Backend (Next.js app)
+- Deploy to **Vercel** (recommended)
+- Set environment variable:
+  - `DATABASE_URL=<your-postgres-url>`
+- Run build command: `npm run build`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Database
+- Host PostgreSQL on Railway/Render/Neon/Supabase
+- Apply schema and seed data in deployment environment:
+  ```bash
+  npm run db:push
+  npm run db:seed
+  ```

@@ -25,7 +25,6 @@ export default function CollegesPage() {
   const [page, setPage] = useState(1);
   const [locations, setLocations] = useState<string[]>([]);
   const [result, setResult] = useState<CollegesResponse | null>(null);
-  const [loading, setLoading] = useState(false);
 
   const query = useMemo(() => {
     const params = new URLSearchParams({ page: String(page), limit: "6" });
@@ -43,16 +42,10 @@ export default function CollegesPage() {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
     void fetch(`/api/colleges?${query}`)
       .then((res) => res.json())
-      .then((data: CollegesResponse) => setResult(data))
-      .finally(() => setLoading(false));
+      .then((data: CollegesResponse) => setResult(data));
   }, [query]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [search, location, maxFees, course]);
 
   return (
     <section className="space-y-5">
@@ -61,13 +54,21 @@ export default function CollegesPage() {
       <div className="grid gap-3 rounded-lg border border-zinc-200 bg-white p-4 md:grid-cols-4">
         <input
           value={search}
-          onChange={(event) => setSearch(event.target.value)}
+          onChange={(event) => {
+            setSearch(event.target.value);
+            setPage(1);
+            setResult(null);
+          }}
           placeholder="Search by college name"
           className="rounded-md border border-zinc-300 px-3 py-2"
         />
         <select
           value={location}
-          onChange={(event) => setLocation(event.target.value)}
+          onChange={(event) => {
+            setLocation(event.target.value);
+            setPage(1);
+            setResult(null);
+          }}
           className="rounded-md border border-zinc-300 px-3 py-2"
         >
           <option value="">All locations</option>
@@ -81,19 +82,27 @@ export default function CollegesPage() {
           type="number"
           min={1}
           value={maxFees}
-          onChange={(event) => setMaxFees(event.target.value)}
+          onChange={(event) => {
+            setMaxFees(event.target.value);
+            setPage(1);
+            setResult(null);
+          }}
           placeholder="Max annual fees"
           className="rounded-md border border-zinc-300 px-3 py-2"
         />
         <input
           value={course}
-          onChange={(event) => setCourse(event.target.value)}
+          onChange={(event) => {
+            setCourse(event.target.value);
+            setPage(1);
+            setResult(null);
+          }}
           placeholder="Filter by course"
           className="rounded-md border border-zinc-300 px-3 py-2"
         />
       </div>
 
-      {loading ? (
+      {!result ? (
         <p className="text-sm text-zinc-600">Loading colleges...</p>
       ) : (
         <>
@@ -116,7 +125,10 @@ export default function CollegesPage() {
 
           <div className="flex items-center justify-between pt-2">
             <button
-              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              onClick={() => {
+                setPage((prev) => Math.max(prev - 1, 1));
+                setResult(null);
+              }}
               disabled={page <= 1}
               className="rounded-md border border-zinc-300 px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
             >
@@ -126,7 +138,10 @@ export default function CollegesPage() {
               Page {result?.pagination.page ?? 1} of {result?.pagination.totalPages ?? 1}
             </p>
             <button
-              onClick={() => setPage((prev) => prev + 1)}
+              onClick={() => {
+                setPage((prev) => prev + 1);
+                setResult(null);
+              }}
               disabled={page >= (result?.pagination.totalPages ?? 1)}
               className="rounded-md border border-zinc-300 px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
             >

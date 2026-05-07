@@ -22,19 +22,16 @@ type College = {
 
 export default function CollegeDetailPage() {
   const params = useParams<{ id: string }>();
-  const [college, setCollege] = useState<College | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [college, setCollege] = useState<College | null | undefined>(undefined);
 
   useEffect(() => {
     if (!params.id) return;
-    setLoading(true);
     void fetch(`/api/colleges/${params.id}`)
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: College | null) => setCollege(data))
-      .finally(() => setLoading(false));
+      .then((data: College | null) => setCollege(data));
   }, [params.id]);
 
-  if (loading) return <p className="text-sm text-zinc-600">Loading college details...</p>;
+  if (college === undefined) return <p className="text-sm text-zinc-600">Loading college details...</p>;
   if (!college) return <p className="text-sm text-red-600">College not found.</p>;
 
   return (
