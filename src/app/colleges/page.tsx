@@ -25,6 +25,7 @@ export default function CollegesPage() {
   const [page, setPage] = useState(1);
   const [locations, setLocations] = useState<string[]>([]);
   const [result, setResult] = useState<CollegesResponse | null>(null);
+  const [isFetching, setIsFetching] = useState(true);
 
   const query = useMemo(() => {
     const params = new URLSearchParams({ page: String(page), limit: "6" });
@@ -44,7 +45,8 @@ export default function CollegesPage() {
   useEffect(() => {
     void fetch(`/api/colleges?${query}`)
       .then((res) => res.json())
-      .then((data: CollegesResponse) => setResult(data));
+      .then((data: CollegesResponse) => setResult(data))
+      .finally(() => setIsFetching(false));
   }, [query]);
 
   return (
@@ -57,7 +59,7 @@ export default function CollegesPage() {
           onChange={(event) => {
             setSearch(event.target.value);
             setPage(1);
-            setResult(null);
+            setIsFetching(true);
           }}
           placeholder="Search by college name"
           className="rounded-md border border-zinc-300 px-3 py-2"
@@ -67,7 +69,7 @@ export default function CollegesPage() {
           onChange={(event) => {
             setLocation(event.target.value);
             setPage(1);
-            setResult(null);
+            setIsFetching(true);
           }}
           className="rounded-md border border-zinc-300 px-3 py-2"
         >
@@ -85,7 +87,7 @@ export default function CollegesPage() {
           onChange={(event) => {
             setMaxFees(event.target.value);
             setPage(1);
-            setResult(null);
+            setIsFetching(true);
           }}
           placeholder="Max annual fees"
           className="rounded-md border border-zinc-300 px-3 py-2"
@@ -95,7 +97,7 @@ export default function CollegesPage() {
           onChange={(event) => {
             setCourse(event.target.value);
             setPage(1);
-            setResult(null);
+            setIsFetching(true);
           }}
           placeholder="Filter by course"
           className="rounded-md border border-zinc-300 px-3 py-2"
@@ -106,6 +108,7 @@ export default function CollegesPage() {
         <p className="text-sm text-zinc-600">Loading colleges...</p>
       ) : (
         <>
+          {isFetching && <p className="text-sm text-zinc-600">Updating results...</p>}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {(result?.data ?? []).map((college) => (
               <article key={college.id} className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm">
@@ -127,7 +130,7 @@ export default function CollegesPage() {
             <button
               onClick={() => {
                 setPage((prev) => Math.max(prev - 1, 1));
-                setResult(null);
+                setIsFetching(true);
               }}
               disabled={page <= 1}
               className="rounded-md border border-zinc-300 px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
@@ -140,7 +143,7 @@ export default function CollegesPage() {
             <button
               onClick={() => {
                 setPage((prev) => prev + 1);
-                setResult(null);
+                setIsFetching(true);
               }}
               disabled={page >= (result?.pagination.totalPages ?? 1)}
               className="rounded-md border border-zinc-300 px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
